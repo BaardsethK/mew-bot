@@ -52,8 +52,19 @@ async def on_message(message):
                 msg = 'https://www.reddit.com{}'.format(subreddit.group(0))
                 await channel.send(msg)
                 await bot.process_commands(message)
+        elif 'Bad bot' in message.content:
+            channel = message.channel
+            msg = '''I've been a very bad bot, please punish me dadmin'''
+            await channel.send(msg)
+            await bot.process_commands(message)
+        elif 'Good bot' in message.content:
+            channel = message.channel
+            msg = '''Please pet my head dadmin'''
+            await channel.send(msg)
+            await bot.process_commands(message)
         else:
             await bot.process_commands(message)
+
 
 
 @bot.event
