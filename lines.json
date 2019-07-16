@@ -6,7 +6,7 @@
             "msg":"Hello, I am Mew - a discord bot on your server."
         },
         {
-            "id":"01"
+            "id":"01",
             "mood":"pleasant",
             "msg":"Hey, I'm Mew, looking forward to participating!"
         }
@@ -22,6 +22,19 @@
             "id":"00",
             "mood":"pleasant",
             "msg":"Happy to help!"
+        }
+    ],
+
+    "sad": [
+        {
+            "id":"00",
+            "mood":"formal",
+            "msg":"I will try not to disappoint you again."
+        },
+        {
+            "id":"01",
+            "mood":"pleasant",
+            "msg":"I'll do my best next time!"
         }
     ]
 }

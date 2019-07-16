@@ -7,7 +7,7 @@ import os
 from os.path import join, dirname
 from dotenv import load_dotenv
 
-import commandutils
+import commandutils as comut
 import re
 import praw
 import time
@@ -38,7 +38,7 @@ async def hi(context):
 @bot.command(name='bfv', aliases=['bf5'], pass_context=True)
 async def bfv_stats(context, origin_alias):
     print('BFV function ran on origin user {}'.format(str(origin_alias)))
-    msg = commandutils.get_bfv_stats(origin_alias)
+    msg = comut.get_bfv_stats(origin_alias)
     await context.send(msg)
 
 @bot.command(name='uwuize', pass_context=True)
@@ -66,11 +66,11 @@ async def on_message(message):
                 await channel.send(msg)
                 await bot.process_commands(message)
         elif 'bad bot' in message.content.lower():
-            msg = '''I've been a very bad bot, please punish me dadmin'''
+            msg = comut.get_message_line('sad', 'formal')
             await channel.send(msg)
             await bot.process_commands(message)
         elif 'good bot' in message.content.lower():
-            msg = '''Please pet my head dadmin'''
+            msg = comut.get_message_line('happy', 'formal')
             await channel.send(msg)
             await bot.process_commands(message)
         else:

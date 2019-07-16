@@ -34,11 +34,11 @@ def get_bfv_stats(origin_alias):
             return msg
             
             
-def get_message_line(type, mood):
+def get_message_line(msg_type, mood):
 
     with open('lines.json') as msg_file:
         data = json.load(msg_file)
-        msg = data.get(type).get(msg)
+        msg = data.get(msg_type).get(mood).get(msg)
 
 #    with open('lines.csv') as csv_file:
 #        csv_reader = csv.reader(csv_file, quotechar='"', delimiter=',', quoting=csv.QUOTE_ALL, skipinitialspace=True)
