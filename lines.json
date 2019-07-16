@@ -16,10 +16,10 @@
         {
             "id":"00",
             "mood":"formal",
-            "msg":"I'm glad to be of help."
+            "msg":"I'm glad you find me helpful."
         },
         {
-            "id":"00",
+            "id":"01",
             "mood":"pleasant",
             "msg":"Happy to help!"
         }

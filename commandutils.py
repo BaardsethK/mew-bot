@@ -6,7 +6,7 @@ import csv
 
 
 def get_bfv_stats(origin_alias):
-    response = requests.get('https://api.tracker.gg/api/v1/bfv/standard/profile/origin/{}'.format(origin_alias))
+        response = requests.get('https://api.tracker.gg/api/v1/bfv/standard/profile/origin/{}'.format(origin_alias))
         try:
             stats = response.json().get('data').get('stats')
             spm = round(float(stats[0].get('value')), 2)
@@ -34,14 +34,11 @@ def get_bfv_stats(origin_alias):
             return msg
             
             
-def get_message_line(msg_type, mood):
-
+def get_message_line(msg_type, mood_type):
+    msg = ''
     with open('lines.json') as msg_file:
-        data = json.load(msg_file)
-        msg = data.get(msg_type).get(mood).get(msg)
-
-#    with open('lines.csv') as csv_file:
-#        csv_reader = csv.reader(csv_file, quotechar='"', delimiter=',', quoting=csv.QUOTE_ALL, skipinitialspace=True)
-        
-    
-    return msg
+        data = json.load(msg_file) 
+        data = data[msg_type]
+        msg_data = next((item for item in data if item["mood"] == mood_type))
+        msg = msg_data["msg"]
+        return msg

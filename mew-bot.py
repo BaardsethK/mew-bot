@@ -60,7 +60,7 @@ async def on_message(message):
             if len(subreddit.group(1)) > 20:
                 msg = '''Silly user, that's not a subreddit.'''
                 await channel.send(msg)
-                awai bot.process_commands(message)
+                await bot.process_commands(message)
             elif subreddit:
                 msg = 'https://www.reddit.com{}'.format(subreddit.group(0))
                 await channel.send(msg)
