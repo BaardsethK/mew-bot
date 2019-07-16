@@ -1,11 +1,12 @@
 import requests
 import json
 import re
+import csv
 
 
 
 def get_bfv_stats(origin_alias):
-        response = requests.get('https://api.tracker.gg/api/v1/bfv/standard/profile/origin/{}'.format(origin_alias))
+    response = requests.get('https://api.tracker.gg/api/v1/bfv/standard/profile/origin/{}'.format(origin_alias))
         try:
             stats = response.json().get('data').get('stats')
             spm = round(float(stats[0].get('value')), 2)
@@ -31,3 +32,16 @@ def get_bfv_stats(origin_alias):
         except:                                                                                                                                                                                                
             msg = "Failed to find that player. Are you sure you spelled it correctly?"
             return msg
+            
+            
+def get_message_line(type, mood):
+
+    with open('lines.json') as msg_file:
+        data = json.load(msg_file)
+        msg = data.get(type).get(msg)
+
+#    with open('lines.csv') as csv_file:
+#        csv_reader = csv.reader(csv_file, quotechar='"', delimiter=',', quoting=csv.QUOTE_ALL, skipinitialspace=True)
+        
+    
+    return msg

@@ -41,24 +41,35 @@ async def bfv_stats(context, origin_alias):
     msg = commandutils.get_bfv_stats(origin_alias)
     await context.send(msg)
 
+@bot.command(name='uwuize', pass_context=True)
+async def uwuize(context, *, message):
+    msg = message.lower()
+    msg = msg.replace('r', 'w')
+    msg = msg.replace('l', 'w')
+    msg = msg.replace('th', 'd')
+    await context.send(msg)
+    
+    
 @bot.event
 async def on_message(message):
-    if message.author.bot == False:  
+    if message.author.bot == False:
+        channel = message.channel
         if '/r/' in message.content:
-            channel = message.channel
             subreddit = re.search(r'\/r\/((.*?)[^\s]+|[^\/]+)', message.content)
             print(subreddit.group(0))
-            if subreddit:
+            if len(subreddit.group(1)) > 20:
+                msg = '''Silly user, that's not a subreddit.'''
+                await channel.send(msg)
+                awai bot.process_commands(message)
+            elif subreddit:
                 msg = 'https://www.reddit.com{}'.format(subreddit.group(0))
                 await channel.send(msg)
                 await bot.process_commands(message)
-        elif 'Bad bot' in message.content:
-            channel = message.channel
+        elif 'bad bot' in message.content.lower():
             msg = '''I've been a very bad bot, please punish me dadmin'''
             await channel.send(msg)
             await bot.process_commands(message)
-        elif 'Good bot' in message.content:
-            channel = message.channel
+        elif 'good bot' in message.content.lower():
             msg = '''Please pet my head dadmin'''
             await channel.send(msg)
             await bot.process_commands(message)
