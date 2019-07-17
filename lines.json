@@ -36,5 +36,18 @@
             "mood":"pleasant",
             "msg":"I'll do my best next time!"
         }
+    ],
+    
+    "dsimissive": [
+        {
+            "id":"00",
+            "mood":"formal",
+            "msg":"It seems you've made an error here."
+        },
+        {
+            "id":"01",
+            "mood":"pleasant",
+            "msg":"Oops, looks like you made a mistake!"
+        }
     ]
 }
