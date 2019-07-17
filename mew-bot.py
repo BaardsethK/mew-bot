@@ -26,10 +26,10 @@ bot = commands.Bot(command_prefix = BOT_PREFIX, description=description)
 
 
 try:
-    mood = pickle.load(open("mood.pickle", "rb"))
+    moods = pickle.load(open("mood.pickle", "rb"))
 except (OSError, IOError) as e:
-    mood = {"":"formal"}
-    pickle.dump(mood, open("mood.pickle", "wb"))
+    moods = {}
+    pickle.dump(moods, open("mood.pickle", "wb"))
     
 
 @bot.command(name='test', description='Test for bot.command-functionality', aliases=['TEST'], pass_context=True)
@@ -60,15 +60,28 @@ async def uwuize(context, *, message):
     
 @bot.command(name='moodify', aliases=['mood'], pass_context=True)
 async def save_mood(context, mood):
-    server_id = context.message.server.id
-    mood[server_id] = mood
-    pickle.dump(mood, open("mood.pickle", "wb"))
-    
+    server_id = str(context.message.guild.id)
+    moods[server_id] = mood
+    pickle.dump(moods, open("mood.pickle", "wb"))
+   
+@bot.command(name='whatmood', pass_context=True)
+async def get_mood(context):
+    server_id = str(context.message.guild.id)
+    if server_id in moods:
+        mood = moods[server_id]
+    else:
+        moods[server_id] = 'formal'
+        mood = 'formal'
+    msg = '''I'm currently feeling {}'''.format(mood)
+    await context.send(msg)
+
 @bot.event
 async def on_message(message):
     if message.author.bot == False:
         channel = message.channel
-        server_id = message.guild.id
+        server_id = str(message.guild.id)
+        if server_id not in moods:
+            moods[server_id] = 'formal'
         if '/r/' in message.content:
             subreddit = re.search(r'\/r\/((.*?)[^\s]+|[^\/]+)', message.content)
             print(subreddit.group(0))
@@ -81,11 +94,11 @@ async def on_message(message):
                 await channel.send(msg)
                 await bot.process_commands(message)
         elif 'bad bot' in message.content.lower():
-            msg = comut.get_message_line('sad', mood[server_id])
+            msg = comut.get_message_line('sad', moods[server_id])
             await channel.send(msg)
             await bot.process_commands(message)
         elif 'good bot' in message.content.lower():
-            msg = comut.get_message_line('happy', mood[server_id])
+            msg = comut.get_message_line('happy', moods[server_id])
             await channel.send(msg)
             await bot.process_commands(message)
         else:
