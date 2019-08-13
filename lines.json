@@ -1,12 +1,10 @@
 {
-    "greetings": [
+    "greeting": [
         {
-            "id":"00",
             "mood":"formal",
             "msg":"Hello, I am Mew - a discord bot on your server."
         },
         {
-            "id":"01",
             "mood":"pleasant",
             "msg":"Hey, I'm Mew, looking forward to participating!"
         }
@@ -14,12 +12,10 @@
     
     "happy": [
         {
-            "id":"00",
             "mood":"formal",
             "msg":"I'm glad you find me helpful."
         },
         {
-            "id":"01",
             "mood":"pleasant",
             "msg":"Happy to help!"
         }
@@ -27,25 +23,21 @@
 
     "sad": [
         {
-            "id":"00",
             "mood":"formal",
             "msg":"I will try not to disappoint you again."
         },
         {
-            "id":"01",
             "mood":"pleasant",
             "msg":"I'll do my best next time!"
         }
     ],
     
-    "dsimissive": [
+    "dismissive": [
         {
-            "id":"00",
             "mood":"formal",
             "msg":"It seems you've made an error here."
         },
         {
-            "id":"01",
             "mood":"pleasant",
             "msg":"Oops, looks like you made a mistake!"
         }

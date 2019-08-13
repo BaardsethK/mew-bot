@@ -75,6 +75,14 @@ async def get_mood(context):
     msg = '''I'm currently feeling {}'''.format(mood)
     await context.send(msg)
 
+@bot.command(name='newreactclass', pass_context=True)
+async def add_reaction_class(context, class_name):
+    comut.add_reaction_class(class_name)
+
+@bot.command(name='newreactmsg', pass_context=True)
+async def add_reaction(context, reaction_name):
+    comut.add_reaction_message(reaction_name)
+
 @bot.event
 async def on_message(message):
     if message.author.bot == False:

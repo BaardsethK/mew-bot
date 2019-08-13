@@ -42,3 +42,15 @@ def get_message_line(msg_type, mood_type):
         msg_data = next((item for item in data if item["mood"] == mood_type))
         msg = msg_data["msg"]
         return msg
+
+def add_reaction_class(class_name):
+    with open('lines.json') as msg_file:
+        data = json.load(msg_file)
+        data[class_name] = ''
+        json.dump(data,msg_file)
+
+def add_reaction_message(reaction_class, reaction_mood, message):
+    with open('lines.json') as msg_file:
+        data = json.load(msg_file)
+        data[reaction_class] = [{"mood",reaction_mood},{"message",message}]
+        json.dump(data,msg_file)
