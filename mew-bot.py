@@ -37,9 +37,11 @@ async def test_command(context):
     await context.send('Responding to test command')
 
 
-@bot.command(name='hi', aliases=['hello', 'hey', 'hallo'], pass_context=True)
+@bot.command(name='hi', description='Project description for Mew', aliases=['hello', 'hey', 'hallo'], pass_context=True)
 async def hi(context):
-    msg = 'Hi {}, I am Mew, a discord bot project by KeyBee#0811.'.format(str(context.message.author))
+    msg = '''Hi {}, I am Mew, a discord bot project by KeyBee#0811.
+    Github: https://github.com/BaardsethK/mew-bot
+    Trello: https://trello.com/b/9RsvmogR/mew-discord-bot'''.format(str(context.message.author))
     await context.send(msg)
 
 
@@ -85,6 +87,18 @@ async def add_reaction_class(context, class_name):
 async def add_reaction(context, reaction_class, mood, message):
     msg = comut.add_reaction_message(reaction_class, mood, message)
     await context.send(msg)
+
+@bot.command(name='combinegifs', pass_context=True)
+async def gif_combine(context, first_id, second_id):
+    first_url_state = "http" in first_id
+    second_url_state = "http" in second_id
+    first_url = ''
+    if first_url:
+        first_url = first_id
+    if second_url:
+        second_url = second_id
+    img = comut.combine_gifs(first_url, second_url)'
+    await context.send_file(img)    
 
 @bot.event
 async def on_message(message):
