@@ -60,6 +60,7 @@ async def uwuize(context, *, message):
     
 @bot.command(name='moodify', aliases=['mood'], pass_context=True)
 async def save_mood(context, mood):
+    mood = mood.lower()
     server_id = str(context.message.guild.id)
     moods[server_id] = mood
     pickle.dump(moods, open("mood.pickle", "wb"))
@@ -77,11 +78,13 @@ async def get_mood(context):
 
 @bot.command(name='newreactclass', pass_context=True)
 async def add_reaction_class(context, class_name):
-    comut.add_reaction_class(class_name)
+    msg = comut.add_reaction_class(class_name)
+    await context.send(msg)
 
 @bot.command(name='newreactmsg', pass_context=True)
-async def add_reaction(context, reaction_name):
-    comut.add_reaction_message(reaction_name)
+async def add_reaction(context, reaction_class, mood, message):
+    msg = comut.add_reaction_message(reaction_class, mood, message)
+    await context.send(msg)
 
 @bot.event
 async def on_message(message):

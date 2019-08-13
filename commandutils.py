@@ -43,14 +43,40 @@ def get_message_line(msg_type, mood_type):
         msg = msg_data["msg"]
         return msg
 
-def add_reaction_class(class_name):
+def add_reaction_class(reaction_class):
+    reaction_class = reaction_class.lower()
     with open('lines.json') as msg_file:
         data = json.load(msg_file)
-        data[class_name] = ''
-        json.dump(data,msg_file)
+        class_exists = reaction_class in data
+    if not class_exists:
+        with open('lines.json', 'w') as msg_file:
+            data[reaction_class] = ''
+            json.dump(data, msg_file)
+        return 'Message class "{}" created'.format(reaction_class)
+    else:
+        return 'Message class "{}" already exists'.format(reaction_class)
 
 def add_reaction_message(reaction_class, reaction_mood, message):
+    reaction_class = reaction_class.lower()
+    reaction_mood = reaction_mood.lower()
     with open('lines.json') as msg_file:
         data = json.load(msg_file)
-        data[reaction_class] = [{"mood",reaction_mood},{"message",message}]
-        json.dump(data,msg_file)
+        class_exists = reaction_class in data
+        try:
+            msg_class = data[reaction_class]
+            for item in msg_class:
+                if (item['mood'] == reaction_mood):
+                    mood_exists = True
+        except KeyError:
+            mood_exists = False
+            pass
+    if class_exists and not mood_exists:
+        with open('lines.json','w') as msg_file:
+            data[reaction_class].append({"mood": reaction_mood, "msg" :message})
+            json.dump(data,msg_file)
+            print('Added message {0}:{1} to class {2}'.format(reaction_mood, message, reaction_class))
+        return 'Added message reaction to file'
+    elif class_exists and mood_exists:
+        return 'This class mood and message already exists. You should make a pull request to change it, or ask the developer to get off his ass and do it himself'
+    elif not class_exists and not mood_exists:
+        return 'Class does not exist.'
