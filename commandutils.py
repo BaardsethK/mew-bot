@@ -2,6 +2,7 @@ import requests
 import json
 import re
 import csv
+import os
 from PIL import Image, ImageSequence, GifImagePlugin
 
 
@@ -83,22 +84,32 @@ def add_reaction_message(reaction_class, reaction_mood, message):
         return 'Class does not exist.'
 
 def combine_gifs(first_url, second_url):
+    size = 128, 128
     with open('/tmp/first.gif', 'wb') as f, open ('/tmp/second.gif', 'wb') as s:
         f.write(requests.get(first_url).content)
         s.write(requests.get(second_url).content)
     imf = Image.open('/tmp/first.gif')
     ims = Image.open('/tmp/second.gif')
+    '''
     images = []
     for frame in ImageSequence.Iterator(imf):
+        frame.thumbnail(size, Image.ANTIALIAS)
         images.append(frame)
-    for frame in ImageSequence.Iterator(ims):
-        images.append(frame)
+        print('Looping frameset 1...')
 
+    for frame in ImageSequence.Iterator(ims):
+        frame.thumbnail(size, Image.ANTIALIAS)
+        images.append(frame)
+        print('Looping frameset 2...')
+
+    '''
     filename='/tmp/combined.gif'
-    images[0].save(filename,
-                    save_all=True,
-                    append_images=images[1:],
-                    duration=100,
-                    loop=0)
+    
+    imf.save(filename,
+             format='GIF',
+             save_all=True,
+             append_images=[ims],
+             duration=64,
+             loop=0)
     
     return filename

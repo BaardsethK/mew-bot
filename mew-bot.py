@@ -1,4 +1,5 @@
 import discord
+from discord import File
 from discord.ext import commands
 from discord.ext.commands import Bot
 from discord.utils import get
@@ -93,12 +94,13 @@ async def gif_combine(context, first_id, second_id):
     first_url_state = "http" in first_id
     second_url_state = "http" in second_id
     first_url = ''
-    if first_url:
+    second_url= ''
+    if first_url_state:
         first_url = first_id
-    if second_url:
+    if second_url_state:
         second_url = second_id
-    img = comut.combine_gifs(first_url, second_url)'
-    await context.send_file(img)    
+    img = comut.combine_gifs(first_url, second_url)
+    await context.send(file=File(img))  
 
 @bot.event
 async def on_message(message):
