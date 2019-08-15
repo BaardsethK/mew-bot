@@ -94,7 +94,7 @@ def combine_gifs(first_url, second_url):
     for frame in ImageSequence.Iterator(ims):
         images.append(frame)
 
-    filename='/tmp/combined.gif'
+    filename = '/tmp/combined.gif'
     images[0].save(filename,
                     save_all=True,
                     append_images=images[1:],
