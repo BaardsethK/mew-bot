@@ -99,7 +99,7 @@ async def gif_combine(context, first_id, second_id):
         first_url = first_id
     if second_url_state:
         second_url = second_id
-    img = comut.combine_gifs(first_url, second_url)
+    img = comut.combine_mpeg(first_url, second_url)
     await context.send(file=File(img))  
 
 @bot.event

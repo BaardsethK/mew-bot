@@ -4,6 +4,7 @@ import re
 import csv
 import os
 from PIL import Image, ImageSequence, GifImagePlugin
+import ffmpeg
 
 
 
@@ -112,4 +113,19 @@ def combine_gifs(first_url, second_url):
              duration=64,
              loop=0)
     
+    return filename
+
+def combine_mpeg(first_url, second_url):
+    filename = './tmp/combined.gif'
+    with open('./tmp/first.gif', 'wb') as f, open ('./tmp/second.gif', 'wb') as s:
+        f.write(requests.get(first_url).content)
+        s.write(requests.get(second_url).content)
+    
+    ffmpeg
+    .concat(
+        f,
+        s,
+    )
+    .output('./tmp/combined.gif')
+
     return filename
