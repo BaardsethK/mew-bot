@@ -84,48 +84,18 @@ def add_reaction_message(reaction_class, reaction_mood, message):
     elif not class_exists and not mood_exists:
         return 'Class does not exist.'
 
-def combine_gifs(first_url, second_url):
-    size = 128, 128
-    with open('/tmp/first.gif', 'wb') as f, open ('/tmp/second.gif', 'wb') as s:
-        f.write(requests.get(first_url).content)
-        s.write(requests.get(second_url).content)
-    imf = Image.open('/tmp/first.gif')
-    ims = Image.open('/tmp/second.gif')
-    '''
-    images = []
-    for frame in ImageSequence.Iterator(imf):
-        frame.thumbnail(size, Image.ANTIALIAS)
-        images.append(frame)
-        print('Looping frameset 1...')
-
-    for frame in ImageSequence.Iterator(ims):
-        frame.thumbnail(size, Image.ANTIALIAS)
-        images.append(frame)
-        print('Looping frameset 2...')
-
-    '''
-    filename='/tmp/combined.gif'
-    
-    imf.save(filename,
-             format='GIF',
-             save_all=True,
-             append_images=[ims],
-             duration=64,
-             loop=0)
-    
-    return filename
-
 def combine_mpeg(first_url, second_url):
-    filename = './tmp/combined.gif'
-    with open('./tmp/first.gif', 'wb') as f, open ('./tmp/second.gif', 'wb') as s:
+    endfile = './tmp/combined.gif'
+    first = './tmp/first.gif'
+    second = './tmp/second.gif'
+
+    with open(first, 'wb') as f, open (second, 'wb') as s:
         f.write(requests.get(first_url).content)
         s.write(requests.get(second_url).content)
-    
-    ffmpeg
-    .concat(
-        f,
-        s,
-    )
-    .output('./tmp/combined.gif')
 
-    return filename
+    info = ffmpeg.probe(first)['streams'][0]
+    f = ffmpeg.input(first)
+    s = ffmpeg.input(second).filter('scale',width=info['width'], height=info['height'], force_original_aspect_ratio='decrease').filter('pad', info['width'], info['height'], '(ow-iw)/2','(oh-ih)/2')
+    ffmpeg.concat(f,s).output(endfile).overwrite_output().run()
+
+    return endfile
