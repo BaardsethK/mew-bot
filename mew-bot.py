@@ -113,7 +113,7 @@ async def on_message(message):
             subreddit = re.search(r'\/r\/((.*?)[^\s]+|[^\/]+)', message.content)
             print(subreddit.group(0))
             if len(subreddit.group(1)) > 20:
-                msg = comut.get_message_line('dismissive', mood[server_id])
+                msg = comut.get_message_line('dismissive', moods[server_id])
                 await channel.send(msg)
                 await bot.process_commands(message)
             elif subreddit:
