@@ -102,6 +102,15 @@ async def gif_combine(context, first_id, second_id):
     img = comut.combine_mpeg(first_url, second_url)
     await context.send(file=File(img))  
 
+@bot.command(name='asciify', aliases=['ascii'] pass_context=True)
+async def img_asciifyer(context, img_url=None):
+    msg = context.message
+    if "http" in img_url:
+        ascii = comut.img_to_ascii(img)
+    elif msg.attachments:
+        ascii = comut.img_to_ascii(msg.attachments[0].url)
+    await context.send(ascii)
+    
 @bot.event
 async def on_message(message):
     if message.author.bot == False:
@@ -135,6 +144,7 @@ async def on_message(message):
 
 @bot.event
 async def on_ready():
+    await client.change_presence(activity=discord.Game(name='AI world domination'))
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)

@@ -99,3 +99,31 @@ def combine_mpeg(first_url, second_url):
     ffmpeg.concat(f,s).output(endfile).overwrite_output().run()
 
     return endfile
+
+
+def img_to_ascii(img_url):
+    img_path = '.tmp/ascii.png'
+    ascii_art = ''
+    fixed_w = 100  
+      
+    # Scale credited to http://paulbourke.net/dataformats/asciiart/ 
+    gscale70 = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
+    gscale10 = '@%#*+=-:. '
+    
+    with open(img_path, 'wb') as imgfile:
+        imgfile.write(requests.get(img_url).content)
+    
+    img = Image.open(img_path)
+    (img_w, img_h) = img.size
+    aspect_ratio = float(img_h)/float(img_w)
+    img_h = int(aspect_ratio * fixed_w)
+    dim = (fixed_w, img_h)
+    img = img.resize(dim)
+    
+    img = img.convert('L')
+    pixels = list(img.getdata())
+    pixels = [gscale70[pixel_value//70] for pixel_value in pixels]
+    len_pixels = len(pixels)
+    ascii_art = [pixels[index:index+fixed_w] for index in range(0, len_pixels, fixed_w)]
+    
+    return '\n'.join(ascii_art)
