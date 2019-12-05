@@ -5,7 +5,7 @@ import csv
 import os
 
 from PIL import Image
-from PIL import ImageSequenece
+from PIL import ImageSequence
 from PIL import GifImagePlugin
 
 import ffmpeg
