@@ -136,3 +136,4 @@ dmypy.json
 /tmp
 .gif
 .tmp
+old.*
