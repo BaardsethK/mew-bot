@@ -110,8 +110,7 @@ def combine_mpeg(first_url, second_url):
     s = ffmpeg.input(second).filter('scale',
                                     width=info['width'], 
                                     height=info['height'], 
-                                    force_original_aspect_ratio='decrease')
-                                    .filter('pad', 
+                                    force_original_aspect_ratio='decrease').filter('pad', 
                                             info['width'],
                                             info['height'],
                                             '(ow-iw)/2','(oh-ih)/2')

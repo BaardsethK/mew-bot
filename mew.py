@@ -74,4 +74,4 @@ async def on_reay():
     print(bot.user.id)
     print('------')
 
-bor.run(TOKEN)
+bot.run(TOKEN)
