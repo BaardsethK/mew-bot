@@ -60,6 +60,11 @@ def get_game_stats(game, alias):
                                                          longhead, 
                                                          playtime)
                 return msg
+            except:
+                print(response)
+                msg = "Failed to find that player. Are you sure you spelled the alias correctly?"
+                return msg
+
         elif game == 'apex':
             try:
                 stats = response.json()
@@ -82,10 +87,12 @@ def get_game_stats(game, alias):
                                                          legend, 
                                                          kills)
                 return msg
-        except:
-            print(response)
-            msg = "Failed to find that player. Are you sure you spelled the alias correctly?"
-            return msg
+
+            except:
+                print(response)
+                msg = "Failed to find that player. Are you sure you spelled the alias correctly?"
+                return msg
+                
     else:
         msg = 'I cannot find statistics for that game'
         return msg
