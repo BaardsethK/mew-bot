@@ -74,10 +74,7 @@ def get_game_stats(game, alias):
                 kills = stats.get('statistics')[0].get('kills')
                 level = stats.get('statistics')[1].get('level')
                 rank_points = stats.get('statistics')[1].get('rank_points')
-                next_rank_points = stats
-                                   .get('player')
-                                   .get('rank')
-                                   .get('next_rank_points')
+                next_rank_points = stats.get('player').get('rank').get('next_rank_points')
 
                 msg = GAME_STAT_PAGE_FORMAT[game].format(alias, 
                                                          rank, 
@@ -92,7 +89,7 @@ def get_game_stats(game, alias):
                 print(response)
                 msg = "Failed to find that player. Are you sure you spelled the alias correctly?"
                 return msg
-                
+
     else:
         msg = 'I cannot find statistics for that game'
         return msg
