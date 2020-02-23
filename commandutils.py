@@ -13,7 +13,8 @@ import ffmpeg
 GAME_STAT_PAGES = {
     'bfv': 'https://api.tracker.gg/api/v1/bfv/standard/profile/origin/{}',
     'apex': 'https://api.dreamteam.gg/games/apex/pc/players/{}/statistics',
-}
+    'r6s': 'https://r6stats.com/api/player-search/{}/pc',
+    }
 
 GAME_STAT_PAGE_FORMAT = {
     'bfv': '''Stats for origin alias: {}
@@ -30,12 +31,20 @@ GAME_STAT_PAGE_FORMAT = {
                Rank: {} {}
                Rank points: {}/{}
                Kills as {}: {} kills''',
+    'r6s': '''Stats for Ubisoft alias: {}
+              Level: {}
+              K/D: {}
+              W/L: {}
+              No. of games played: {}
+              No. of suicides: {}''',
+
 }
 
 def get_game_stats(game, alias):
-    if GAME_STAT_PAGES[game]:
+    if game in GAME_STAT_PAGES.keys():
         url = GAME_STAT_PAGES[game]
         response = requests.get(url.format(alias))
+        print(response.json()[0].get('ubisoft_id'))
         if game == 'bfv':
             try:
                 stats = response.json().get('data').get('stats')
@@ -83,6 +92,30 @@ def get_game_stats(game, alias):
                                                          next_rank_points, 
                                                          legend, 
                                                          kills)
+                return msg
+
+            except:
+                print(response)
+                msg = "Failed to find that player. Are you sure you spelled the alias correctly?"
+                return msg
+        elif game == 'r6s':
+            try:
+                ubi_id = response.json()[0].get('ubisoft_id')
+                ubi_response = requests.get('https://r6stats.com/api/stats/{}'.format(ubi_id))
+                stats = ubi_response.json()
+                level = stats.get('progression').get('level')
+                kdratio = stats.get('stats')[0].get('general').get('kd')
+                wlratio = stats.get('stats')[0].get('general').get('wl')
+                suicide = stats.get('stats')[0].get('general').get('suicides')
+                no_of_games = stats.get('stats')[0].get('general').get('games_played')
+                
+                msg = GAME_STAT_PAGE_FORMAT[game].format(alias,
+                                                         level,
+                                                         kdratio,
+                                                         wlratio,
+                                                         no_of_games,
+                                                         suicide)
+
                 return msg
 
             except:

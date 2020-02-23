@@ -26,7 +26,7 @@ BOT_PREFIX = ('!m ', '!mew ', '!Mew ', '!MEW ', '!M')
 description='''Mew - Python-based discord bot!'''
 bot = commands.Bot(command_prefix = BOT_PREFIX, description=description)
 
-@bot.commad(name='hi', description='Project description for Mew', aliases=['hello', 'hey', 'hallo'], pass_context=True)
+@bot.command(name='hi', description='Project description for Mew', aliases=['hello', 'hey', 'hallo'], pass_context=True)
 async def hi(context):
     msg = '''Hi {}, I am Mew, a discord bot project by KeyBee#0811.
     Github: https://github.com/BaardsethK/mew-bot
@@ -47,13 +47,26 @@ async def uwuize(context, *, message):
     msg = msg.replace('th', 'd')
     await context.send(msg)
 
+@bot.command(name='combinegifs', pass_context=True)
+async def gif_combine(context, first_id, second_id):
+    first_url_state = "http" in first_id
+    second_url_state = "http" in second_id
+    first_url = ''
+    second_url = ''
+    if first_url_state:
+        first_url = first_id
+    if second_url_state:
+        second_url = second_id
+    img = commandutils.combine_mpeg(first_url, second_url)
+    await context.send(file=File(img))
+
 @bot.event
 async def on_message(message):
     if message.author.bot == False:
         channel = message.channel
         server_id = str(message.guild.id)
         if '/r/' in message.content:
-            subreddit = re.search(r'\/r\/((.*?)[^\s-.-,]+|[^\/]+)', message.content)
+            subreddit = re.search(r'\/r\/([a-zA-Z0-9]+[^\W]|[^\D])', message.content)
             print(subreddit.group(0))
             if len(subreddit.group(1)) > 20:
                 msg = comut.get_message_line('dismissive', moods[server_id])
