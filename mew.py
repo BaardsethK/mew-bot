@@ -49,14 +49,16 @@ async def uwuize(context, *, message):
 @bot.command(name='score', pass_context=True)
 async def score(context):
     await checkJar()
+    msg = "You have no content score. Send attachments to score better!"
     if os.path.getsize(JAR) > 0:
         pickle_data = pickle.load(open(JAR, "rb"))
         if hash(context.message.author) in pickle_data:
             score = pickle_data[hash(context.message.author)]
             msg = f"Your content score is {score}"
             await context.send(msg)
+        else:
+            await context.send(msg)
     else:
-        msg = "You have no content score. Send attachments to score better!"
         await context.send(msg)
 
 @bot.command(name='roll',
@@ -120,8 +122,6 @@ async def addscore(author):
 
     pickle.dump(pickle_data, outfile)
     outfile.close() 
-    
-
 
 @bot.event
 async def on_message(message):
