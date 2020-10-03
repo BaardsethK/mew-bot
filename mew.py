@@ -24,6 +24,12 @@ JAR = ('./discord.pkl')
 description = '''Mew - Python-based discord bot!'''
 bot = commands.Bot(command_prefix = BOT_PREFIX, description=description)
 
+async def checkJar():
+    if os.path.isfile(JAR):
+        pass
+    else:
+        open(JAR, 'a').close()
+
 @bot.command(name='hi', description='Project description for Mew', aliases=['hello', 'hey', 'hallo'], pass_context=True)
 async def hi(context):
     msg = '''Hi {}, I am Mew, a discord bot project by KeyBee#0811.
@@ -42,6 +48,7 @@ async def uwuize(context, *, message):
 
 @bot.command(name='score', pass_context=True)
 async def score(context):
+    await checkJar()
     if os.path.getsize(JAR) > 0:
         pickle_data = pickle.load(open(JAR, "rb"))
         if hash(context.message.author) in pickle_data:
@@ -97,10 +104,10 @@ async def rollImg(context, msg_limit = 100):
         await context.send(file=file_to_send)
 
 async def addscore(author):
+    await checkJar()
     if os.path.getsize(JAR) > 0:
         pickle_data = pickle.load(open(JAR, "rb"))
     else:
-        print("No pickle-file, EOFError")
         print("Creating pickle data")
         pickle_data = {}
     if author in pickle_data:
