@@ -30,6 +30,14 @@ async def checkJar():
     else:
         open(JAR, 'a').close()
 
+async def checkUserScore(user):
+    if os.path.getsize(JAR) > 0:
+        pickle_data = pickle.load(open(JAR, "rb"))
+        if hash(user) in pickle_data:
+            score = pickle_data[hash(user)]
+            return score
+    return 0
+
 @bot.command(name='hi', description='Project description for Mew', aliases=['hello', 'hey', 'hallo'], pass_context=True)
 async def hi(context):
     msg = '''Hi {}, I am Mew, a discord bot project by KeyBee#0811.
@@ -49,18 +57,27 @@ async def uwuize(context, *, message):
 @bot.command(name='score', pass_context=True)
 async def score(context):
     await checkJar()
-    msg = "You have no content score. Send attachments to score better!"
-    if os.path.getsize(JAR) > 0:
-        pickle_data = pickle.load(open(JAR, "rb"))
-        if hash(context.message.author) in pickle_data:
-            score = pickle_data[hash(context.message.author)]
-            msg = f"Your content score is {score}"
-            await context.send(msg)
-        else:
-            await context.send(msg)
-    else:
-        await context.send(msg)
+    score = await checkUserScore(context.message.author)
+    msg = f"Your content score is {score}"
+    await context.send(msg)
 
+@bot.command(name='hiscore', description='Check current server Hi-score',pass_context=True)
+async def hiscore(context):
+    users = context.guild.members
+    scoreboard = {}
+    msg = "Scores:\n"
+    for user in users:
+        if user.nick:
+            name = user.nick
+        else:
+            name = user
+        scoreboard[name] = await checkUserScore(user)
+    scoreboard = dict(sorted(scoreboard.items(), key=lambda item: item[1], reverse=True))
+    for user,score in scoreboard.items():
+        msg += f"\t{user}: {score}\n"
+    await context.send(msg)
+
+    
 @bot.command(name='roll',
     description='Runs one of the roll-commands available',
     pass_context=True)
