@@ -149,7 +149,7 @@ async def on_message(message):
             subreddit = re.findall(r'\/r\/[a-zA-Z0-9_.-]{3,20}', message.content)
             if subreddit:
                 for sub in subreddit:
-                    msg = f'https://www.reddit.com/r/{sub}'
+                    msg = f'https://www.reddit.com{sub}'
                     await channel.send(msg)
         if len(message.attachments) > 0:
             author = hash(message.author)
