@@ -146,7 +146,7 @@ async def on_message(message):
         channel = message.channel
         server_id = str(message.guild.id)
         if '/r/' in message.content:
-            subreddit = re.findall(r'\/r\/([^\/]|[^\s]){3,20}', message.content)
+            subreddit = re.findall(r'\/r\/[a-zA-Z0-9_.-]{3,20}', message.content)
             if subreddit:
                 for sub in subreddit:
                     msg = f'https://www.reddit.com/r/{sub}'
