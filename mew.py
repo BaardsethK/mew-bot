@@ -122,6 +122,20 @@ async def rollImg(context, msg_limit = 100):
         file_to_send = await msg_attachments[roll].to_file()
         await context.send(file=file_to_send)
 
+@bot.command(name='rolluser',
+    description='Roll a random user to go with your message',
+    pass_context=True)
+async def rollUser(context, *, arg = ""):
+    members = context.channel.members
+    member = members[random.randint(0, len(members)-1)]
+    if len(arg) > 0:
+        msg = f"{member.display_name} {arg}"
+    else:
+        msg = f"{member.display_name}"
+    await context.send(msg)
+
+
+
 async def addscore(author):
     await checkJar()
     if os.path.getsize(JAR) > 0:
