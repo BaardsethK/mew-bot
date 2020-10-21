@@ -2,6 +2,7 @@ import discord
 from discord import File
 from discord.ext import commands
 from discord.ext.commands import bot
+from discord.ext.commands import CommandNotFound
 
 import os
 from os.path import join
@@ -22,7 +23,10 @@ BOT_PREFIX = ('!mew ')
 JAR = ('./discord.pkl')
 
 description = '''Mew - Python-based discord bot!'''
-bot = commands.Bot(command_prefix = BOT_PREFIX, description=description)
+intents = discord.Intents.default()
+intents.members = True
+bot = commands.Bot(command_prefix = BOT_PREFIX, description=description, intents=intents)
+
 
 async def checkJar():
     if os.path.isfile(JAR):
@@ -169,6 +173,12 @@ async def on_message(message):
             author = hash(message.author)
             await addscore(author)
         await bot.process_commands(message)
+
+@bot.event
+async def on_command_error(context, error):
+    if isinstance(error, CommandNotFound):
+        return
+    raise error
 
 @bot.event
 async def on_ready():
