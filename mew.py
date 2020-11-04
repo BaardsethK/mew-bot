@@ -13,6 +13,7 @@ from dotenv import load_dotenv
 import re
 import pickle
 import random
+import databasehandler
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -20,27 +21,13 @@ load_dotenv(dotenv_path)
 TOKEN = os.getenv('DISCORD_TOKEN')
 BOT_PREFIX = ('!mew ')
 
-JAR = ('./discord.pkl')
+CURRENCY_DATABASE = ('./sqlite/db/currencybase.db')
 
 description = '''Mew - Python-based discord bot!'''
 intents = discord.Intents.default()
 intents.members = True
 bot = commands.Bot(command_prefix = BOT_PREFIX, description=description, intents=intents)
 
-
-async def checkJar():
-    if os.path.isfile(JAR):
-        pass
-    else:
-        open(JAR, 'a').close()
-
-async def checkUserScore(user):
-    if os.path.getsize(JAR) > 0:
-        pickle_data = pickle.load(open(JAR, "rb"))
-        if hash(user) in pickle_data:
-            score = pickle_data[hash(user)]
-            return score
-    return 0
 
 @bot.command(name='hi', description='Project description for Mew', aliases=['hello', 'hey', 'hallo'], pass_context=True)
 async def hi(context):
@@ -58,11 +45,15 @@ async def uwuize(context, *, message):
     msg = msg.replace('th', 'd')
     await context.send(msg)
 
+@bot.command(name='initdb', description='Init DB file/tables if not exists', pass_context=True)
+async def init_db(context):
+    databasehandler.init_databases(CURRENCY_DATABASE)
+    await context.send('Initiated')
+
 @bot.command(name='score', pass_context=True)
 async def score(context):
-    await checkJar()
-    score = await checkUserScore(context.message.author)
-    msg = f"Your content score is {score}"
+    score =  databasehandler.check_user(CURRENCY_DATABASE, context.message.author.id)
+    msg = f"Your content score is {score[2]}"
     await context.send(msg)
 
 @bot.command(name='hiscore', description='Check current server Hi-score',pass_context=True)
@@ -138,26 +129,6 @@ async def rollUser(context, *, arg = ""):
         msg = f"{member.display_name}"
     await context.send(msg)
 
-
-
-async def addscore(author):
-    await checkJar()
-    if os.path.getsize(JAR) > 0:
-        pickle_data = pickle.load(open(JAR, "rb"))
-    else:
-        print("Creating pickle data")
-        pickle_data = {}
-    if author in pickle_data:
-        score = pickle_data[author]
-        pickle_data[author] = score + 1
-    elif author not in pickle_data:
-        pickle_data[author] = 1
-
-    outfile = open(JAR, 'wb')
-
-    pickle.dump(pickle_data, outfile)
-    outfile.close() 
-
 @bot.event
 async def on_message(message):
     if message.author.bot == False:
@@ -170,9 +141,16 @@ async def on_message(message):
                     msg = f'https://www.reddit.com{sub}'
                     await channel.send(msg)
         if len(message.attachments) > 0:
-            author = hash(message.author)
-            await addscore(author)
+            author = message.author.id
+            await score_user(100, author)
         await bot.process_commands(message)
+
+async def score_user(score, user_id):
+    user_data = databasehandler.check_user(CURRENCY_DATABASE, (user_id))
+    if user_data is None:
+        databasehandler.add_user(CURRENCY_DATABASE, (user_id, 0,0))
+    elif user_data is not None:
+        databasehandler.increase_user_score(CURRENCY_DATABASE, (score, user_id))
 
 @bot.event
 async def on_command_error(context, error):
