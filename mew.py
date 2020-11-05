@@ -45,33 +45,13 @@ async def uwuize(context, *, message):
     msg = msg.replace('th', 'd')
     await context.send(msg)
 
-@bot.command(name='initdb', description='Init DB file/tables if not exists', pass_context=True)
-async def init_db(context):
-    databasehandler.init_databases(CURRENCY_DATABASE)
-    await context.send('Initiated')
-
 @bot.command(name='score', pass_context=True)
 async def score(context):
-    score =  databasehandler.check_user(CURRENCY_DATABASE, context.message.author.id)
+    author = context.message.author.id
+    score_user(0, author)
+    score =  databasehandler.check_user(CURRENCY_DATABASE, author)
     msg = f"Your content score is {score[2]}"
     await context.send(msg)
-
-@bot.command(name='hiscore', description='Check current server Hi-score',pass_context=True)
-async def hiscore(context):
-    users = context.guild.members
-    scoreboard = {}
-    msg = "Scores:\n"
-    for user in users:
-        if user.nick:
-            name = user.nick
-        else:
-            name = user
-        scoreboard[name] = await checkUserScore(user)
-    scoreboard = dict(sorted(scoreboard.items(), key=lambda item: item[1], reverse=True))
-    for user,score in scoreboard.items():
-        msg += f"\t{user}: {score}\n"
-    await context.send(msg)
-
     
 @bot.command(name='roll',
     description='Runs one of the roll-commands available',
@@ -160,6 +140,7 @@ async def on_command_error(context, error):
 
 @bot.event
 async def on_ready():
+    databasehandler.init_databases(CURRENCY_DATABASE)
     await bot.change_presence(activity=discord.Game(name=''))
     print('Logged in as')
     print(bot.user.name)
