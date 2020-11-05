@@ -75,3 +75,12 @@ def increase_user_score(db_path, info):
         cursor.execute(sql, info)
         connection.commit()
         return cursor.lastrowid
+
+def decrease_user_score(db_path, info):
+    connection = create_connection(db_path)
+    if connection != None:
+        sql = ''' UPDATE users SET points = points - ? WHERE user_id = ? '''
+        cursor = connection.cursor()
+        cursor.execute(sql, info)
+        connection.commit()
+        return cursor.lastrowid

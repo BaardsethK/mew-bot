@@ -14,6 +14,7 @@ import re
 import pickle
 import random
 import databasehandler
+import logging
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -32,8 +33,7 @@ bot = commands.Bot(command_prefix = BOT_PREFIX, description=description, intents
 @bot.command(name='hi', description='Project description for Mew', aliases=['hello', 'hey', 'hallo'], pass_context=True)
 async def hi(context):
     msg = '''Hi {}, I am Mew, a discord bot project by KeyBee#0811.
-    Github: https://github.com/BaardsethK/mew-bot
-    Trello: https://trello.com/b/9RsvmogR/mew-discord-bot'''.format(str(context.message.author))
+    Github: https://github.com/BaardsethK/mew-bot'''.format(str(context.message.author))
     await context.send(msg)
 
 @bot.command(name='uwuize', pass_context=True)
@@ -46,12 +46,35 @@ async def uwuize(context, *, message):
     await context.send(msg)
 
 @bot.command(name='score', pass_context=True)
-async def score(context):
-    author = context.message.author.id
-    score_user(0, author)
-    score =  databasehandler.check_user(CURRENCY_DATABASE, author)
-    msg = f"Your content score is {score[2]}"
-    await context.send(msg)
+async def score(context, user = ""):
+    author = context.message.author
+    if len(user) > 0:
+        try:
+            user = context.message.mentions[0]
+            await score_user(0, user.id)
+            score = databasehandler.check_user(CURRENCY_DATABASE, user.id)
+            msg = f"{user.display_name}s score is {score[2]}"
+            await context.send(msg)
+        except:
+            print('Error occured getting user score.')
+    else:
+        await score_user(0, author.id)
+        score =  databasehandler.check_user(CURRENCY_DATABASE, author.id)
+        msg = f"{author.display_name} content score is {score[2]}"
+        await context.send(msg)
+
+@bot.command(name='tip', pass_context=True)
+async def tip_user(context, user_id, tipping_amount):
+    if int(tipping_amount) <= 0:
+        await context.send(f"Nice try {context.message.author.display_name}")
+        return
+    tipped_user = context.message.mentions[0]
+    afford_tip = await remove_user_score(tipping_amount, context.message.author.id)
+    if afford_tip:
+        await score_user(tipping_amount, tipped_user.id)
+        await context.send(f'User {tipped_user.display_name} was tipped {tipping_amount}')
+    else:
+        await context.send(f'User {context.message.author.display_name} cannot afford to tip {tipping_amount}!')
     
 @bot.command(name='roll',
     description='Runs one of the roll-commands available',
@@ -129,8 +152,20 @@ async def score_user(score, user_id):
     user_data = databasehandler.check_user(CURRENCY_DATABASE, (user_id))
     if user_data is None:
         databasehandler.add_user(CURRENCY_DATABASE, (user_id, 0,0))
+        databasehandler.increase_user_score(CURRENCY_DATABASE, (score, user_id))
     elif user_data is not None:
         databasehandler.increase_user_score(CURRENCY_DATABASE, (score, user_id))
+
+async def remove_user_score(score, user_id):
+    user_data = databasehandler.check_user(CURRENCY_DATABASE, (user_id))
+    if user_data is None:
+        databasehandler.add_user(CURRENCY_DATABASE, (user_id, 0,0))
+        return False
+    elif user_data is not None and user_data[2] >= int(score):
+        databasehandler.decrease_user_score(CURRENCY_DATABASE, (score, user_id))
+        return True
+    else:
+        return False
 
 @bot.event
 async def on_command_error(context, error):
