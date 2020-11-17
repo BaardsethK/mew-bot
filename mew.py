@@ -80,11 +80,13 @@ async def tip_user(context, user_id, tipping_amount):
     description='Runs one of the roll-commands available',
     pass_context=True)
 async def roll(context, limit=100):
-    roll = random.randint(0,1)
+    roll = random.randint(0,2)
     if roll == 0:
         await rollMsg(context, limit)
-    else:
+    elif roll == 1:
         await rollImg(context, limit)
+    else:
+        await rollUser(context)
 
 @bot.command(name='rollmsg',
     description='Roll random message from message history. Limit is 100 msg history unless specified',
@@ -143,6 +145,12 @@ async def on_message(message):
                 for sub in subreddit:
                     msg = f'https://www.reddit.com{sub}'
                     await channel.send(msg)
+        if 'http' in message.content:
+            regex= r'(?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:\'¨".,<>?«»“”‘’]))'
+            url_regex = re.findall(regex, message.content)
+            if url_regex:
+                author = message.author.id
+                await score_user(30, author)
         if len(message.attachments) > 0:
             author = message.author.id
             await score_user(100, author)
