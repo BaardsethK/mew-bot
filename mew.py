@@ -10,6 +10,8 @@ from os.path import dirname
 
 from dotenv import load_dotenv
 
+from collections import OrderedDict
+
 import re
 import pickle
 import random
@@ -62,6 +64,24 @@ async def score(context, user = ""):
         score =  databasehandler.check_user(CURRENCY_DATABASE, author.id)
         msg = f"{author.display_name} content score is {score[2]}"
         await context.send(msg)
+
+@bot.command(name='hiscore', pass_context=True)
+async def hiscore(context):
+    server_users = context.channel.members
+    user_scores = {}
+    for user in server_users:
+        try:
+            await score_user(0, user.id)
+            score = databasehandler.check_user(CURRENCY_DATABASE, user.id)
+            user_scores[user.display_name] = score[2]
+        except:
+            print(f'Error occured getting user score for user {user}')
+    sorted_dict = {user: score for user, score in sorted(user_scores.items(), key=lambda item: item[1], reverse=True)}
+    msg = 'High-scores:'
+    for username, score in sorted_dict.items():
+        msg += f'\n\t{username}: {score}'
+    await context.send(msg)
+
 
 @bot.command(name='tip', pass_context=True)
 async def tip_user(context, user_id, tipping_amount):
