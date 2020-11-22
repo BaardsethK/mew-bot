@@ -76,7 +76,7 @@ async def hiscore(context):
             user_scores[user.display_name] = score[2]
         except:
             print(f'Error occured getting user score for user {user}')
-    sorted_dict = {user: score for user, score in sorted(user_scores.items(), key=lambda item: item[1], reverse=True)}
+    sorted_dict = {user: score for user, score in sorted(user_scores.items(), key=lambda item: item[1], reverse=True) if score != 0}
     msg = 'High-scores:'
     for username, score in sorted_dict.items():
         msg += f'\n\t{username}: {score}'
