@@ -15,7 +15,7 @@ from collections import OrderedDict
 import re
 import pickle
 import random
-import databasehandler
+from databasehandlers import userscore_db, rssfeeds_db
 import logging
 
 dotenv_path = join(dirname(__file__), '.env')
@@ -25,6 +25,7 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 BOT_PREFIX = ('!mew ')
 
 CURRENCY_DATABASE = ('./sqlite/db/currencybase.db')
+RSS_DATABASE = ('./sqlite/rss_feeds.db')
 
 description = '''Mew - Python-based discord bot!'''
 intents = discord.Intents.default()
@@ -54,14 +55,14 @@ async def score(context, user = ""):
         try:
             user = context.message.mentions[0]
             await score_user(0, user.id)
-            score = databasehandler.check_user(CURRENCY_DATABASE, user.id)
+            score = userscore_db.check_user(CURRENCY_DATABASE, user.id)
             msg = f"{user.display_name}s score is {score[2]}"
             await context.send(msg)
         except:
             print('Error occured getting user score.')
     else:
         await score_user(0, author.id)
-        score =  databasehandler.check_user(CURRENCY_DATABASE, author.id)
+        score =  userscore_db.check_user(CURRENCY_DATABASE, author.id)
         msg = f"{author.display_name} content score is {score[2]}"
         await context.send(msg)
 
@@ -72,7 +73,7 @@ async def hiscore(context):
     for user in server_users:
         try:
             await score_user(0, user.id)
-            score = databasehandler.check_user(CURRENCY_DATABASE, user.id)
+            score = userscore_db.check_user(CURRENCY_DATABASE, user.id)
             user_scores[user.display_name] = score[2]
         except:
             print(f'Error occured getting user score for user {user}')
@@ -154,6 +155,23 @@ async def rollUser(context, *, arg = ""):
         msg = f"{member.display_name}"
     await context.send(msg)
 
+@bot.command(name='addrss',
+    description='Add rss-feed to current channel',
+    pass_context=True)
+async def addRss(context, rss):
+    server_id = context.guild
+    channel_id = context.channel
+    if len(rss) > 0:
+        rssfeeds_db.add_server(server_id, channel_id)
+        rssfeeds_db.add_rss(rss, server_id)
+
+@bot.command(name='removerss',
+    description='Remove rss-feed from current channel',
+    pass_context=True)
+async def removeRss(context, rss_id):
+    server_id = context.guild
+    rssfeeds_db.remove_rss(rss, server_id)
+
 @bot.event
 async def on_message(message):
     if message.author.bot == False:
@@ -177,20 +195,20 @@ async def on_message(message):
         await bot.process_commands(message)
 
 async def score_user(score, user_id):
-    user_data = databasehandler.check_user(CURRENCY_DATABASE, (user_id))
+    user_data = userscore_db.check_user(CURRENCY_DATABASE, (user_id))
     if user_data is None:
-        databasehandler.add_user(CURRENCY_DATABASE, (user_id, 0,0))
-        databasehandler.increase_user_score(CURRENCY_DATABASE, (score, user_id))
+        userscore_db.add_user(CURRENCY_DATABASE, (user_id, 0,0))
+        userscore_db.increase_user_score(CURRENCY_DATABASE, (score, user_id))
     elif user_data is not None:
-        databasehandler.increase_user_score(CURRENCY_DATABASE, (score, user_id))
+        userscore_db.increase_user_score(CURRENCY_DATABASE, (score, user_id))
 
 async def remove_user_score(score, user_id):
-    user_data = databasehandler.check_user(CURRENCY_DATABASE, (user_id))
+    user_data = userscore_db.check_user(CURRENCY_DATABASE, (user_id))
     if user_data is None:
-        databasehandler.add_user(CURRENCY_DATABASE, (user_id, 0,0))
+        userscore_db.add_user(CURRENCY_DATABASE, (user_id, 0,0))
         return False
     elif user_data is not None and user_data[2] >= int(score):
-        databasehandler.decrease_user_score(CURRENCY_DATABASE, (score, user_id))
+        userscore_db.decrease_user_score(CURRENCY_DATABASE, (score, user_id))
         return True
     else:
         return False
@@ -203,7 +221,8 @@ async def on_command_error(context, error):
 
 @bot.event
 async def on_ready():
-    databasehandler.init_databases(CURRENCY_DATABASE)
+    userscore_db.init_databases(CURRENCY_DATABASE)
+    rssfeeds_db.init_databases(RSS_DATABASE)
     await bot.change_presence(activity=discord.Game(name=''))
     print('Logged in as')
     print(bot.user.name)
