@@ -155,22 +155,30 @@ async def rollUser(context, *, arg = ""):
         msg = f"{member.display_name}"
     await context.send(msg)
 
+@bot.command(name='listrss',
+    description='List rss-feeds related to current server',
+    pass_context=True)
+async def listrss(context):
+    server_id = context.guild.id
+    feeds = rssfeeds_db.check_rss(RSS_DATABASE, (server_id))
+    await context.send(str(feeds))
+
 @bot.command(name='addrss',
     description='Add rss-feed to current channel',
     pass_context=True)
 async def addRss(context, rss):
-    server_id = context.guild
-    channel_id = context.channel
+    server_id = context.guild.id
+    channel_id = context.channel.id
     if len(rss) > 0:
-        rssfeeds_db.add_server(server_id, channel_id)
-        rssfeeds_db.add_rss(rss, server_id)
+        rssfeeds_db.add_server(RSS_DATABASE, (server_id, channel_id))
+        rssfeeds_db.add_rss(RSS_DATABASE, (rss, server_id))
 
 @bot.command(name='removerss',
     description='Remove rss-feed from current channel',
     pass_context=True)
 async def removeRss(context, rss_id):
-    server_id = context.guild
-    rssfeeds_db.remove_rss(rss, server_id)
+    server_id = context.guild.id
+    rssfeeds_db.remove_rss(RSS_DATABASE, (rss_id, server_id))
 
 @bot.event
 async def on_message(message):

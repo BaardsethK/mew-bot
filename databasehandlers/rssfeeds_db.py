@@ -6,12 +6,12 @@ def init_databases(db_path):
     try:
         connection = sqlite3.connect(db_path)
 
-        sql_create_servers = ''' CREATE TABLE IF NOT EXISTS servers (
+        sql = ''' CREATE TABLE IF NOT EXISTS servers (
             server_id PRIMARY KEY,
             channel_id integer NOT NULL
-            );'''
-
-        sql_create_rss = ''' CREATE TABLE IF NOT EXISTS rss_feeds (
+            );
+            
+            CREATE TABLE IF NOT EXISTS rss_feeds (
                 id integer PRIMARY KEY,
                 link text NOT NULL,
                 server_id integer NOT NULL,
@@ -23,8 +23,7 @@ def init_databases(db_path):
 
         try:
             cursor = connection.cursor()
-            cursor.execute(sql_create_servers)
-            cursor.exectue(sql_create_rss)
+            cursor.executescript(sql)
             connection.close()
         except Error as e:
             print(e)
@@ -53,7 +52,6 @@ def check_rss(db_path, info):
             print(e)
     return None
         
-
 def add_rss(db_path, info):
     connection = create_connection(db_path)
     if connection != None:
@@ -67,7 +65,7 @@ def add_rss(db_path, info):
 def remove_rss(db_path, info):
     connection = create_connection(db_path)
     if connection != None:
-        sql = ''' DELETE FROM rss_feeds WHHERE id = ? and server_id = ? '''
+        sql = ''' DELETE FROM rss_feeds WHERE id = ? and server_id = ? '''
         cursor= connection.cursor()
         cursor.execute(sql, info)
         connection.commit()
