@@ -6,7 +6,9 @@ def init_databases(db_path):
     try:
         connection = sqlite3.connect(db_path)
 
-        sql = ''' CREATE TABLE IF NOT EXISTS servers (
+        # Maybe better to just use one table?
+        
+        sql_2table = ''' CREATE TABLE IF NOT EXISTS servers (
             server_id PRIMARY KEY,
             channel_id integer NOT NULL
             );
@@ -20,6 +22,14 @@ def init_databases(db_path):
                 ON UPDATE CASCADE
                 ON DELETE CASCADE
                 );'''
+            
+        sql = ''' CREATE TABLE IF NOT EXISTS rss_feeds (
+            id integer PRIMARY KEY,
+            link text NOT NULL,
+            server_id integer NOT NULL,
+            channel_id integer NOT NULL,
+            );'''
+            
 
         try:
             cursor = connection.cursor()

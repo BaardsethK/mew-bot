@@ -1,6 +1,6 @@
 import discord
 from discord import File
-from discord.ext import commands
+from discord.ext import commands, tasks
 from discord.ext.commands import bot
 from discord.ext.commands import CommandNotFound
 
@@ -179,6 +179,16 @@ async def addRss(context, rss):
 async def removeRss(context, rss_id):
     server_id = context.guild.id
     rssfeeds_db.remove_rss(RSS_DATABASE, (rss_id, server_id))
+
+@tasks.loop(hours=1)
+async def rssFeedUpdate():
+    message_channel = bot.get_channel(0)
+    await message_channel.send("Testus")
+
+@rssFeedUpdate.before_loop
+async def before():
+    await bot.wait_until_ready()
+    
 
 @bot.event
 async def on_message(message):
